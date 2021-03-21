@@ -1,0 +1,172 @@
+.post {
+  width: 100%;
+  margin-top: 15px;
+  border-radius: 15px;
+  background-color: white;
+  box-shadow: 0px 5px 7px -7px rgba(0, 0, 0, 0.75);
+}
+
+.post__image>img {
+  width: 100%;
+}
+
+.post__top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.post__top__left {
+  display: flex;
+  padding: 15px;
+  position: relative;
+  align-items: center;
+  
+}
+
+.post__top__right {
+  font-weight: 700;
+  color: gray;
+  padding: 7px;
+  cursor: pointer;
+/*   display: flex;
+  position: relative;
+  justify-content: flex-end !important;
+  align-content: flex-end !important; */
+}
+.post__top__right:hover {
+  background-color: #e4e4e4;
+  border-radius: 100%;
+}
+
+.post__Menu__options {
+  padding-left: 6px;
+}
+
+.post__avatar {
+  margin-right: 10px;
+}
+
+.post__topInfo>h3 {
+  font-size: medium;
+}
+
+.post__topInfo>p {
+  font-size: small;
+  color: gray;
+}
+
+.post__bottom {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 15px 25px;
+}
+
+.post__options {
+  padding: 10px 10px;
+  border-top: 1px solid lightgray;
+  display: flex;
+  justify-content: space-evenly;
+  font-size: medium;
+  color: gray;
+  cursor: pointer;
+}
+
+.post__option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+.liked {
+  color: #4178F2;
+}
+
+.post__option>p {
+  margin-left: 10px;
+}
+
+.post__option:hover {
+  background-color: #eff2f5;
+  border-radius: 10px;
+}
+
+.post__update__form {
+  display: flex;
+  flex-direction: 'row';
+  margin-left: 3px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+.post__update__form__hidden {
+  display: none;
+}
+
+.post__update__inputBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  outline-width: 0;
+  border: none;
+  padding: 5px 20px;
+  margin: 0 10px;
+  border-radius: 999px;
+  background-color: #eff2f5;
+  width: 70%;
+}
+
+.post__update__inputBox__hidden { 
+  display: none;
+}
+
+.post__update__inputBox > input {
+  border: none;
+  background-color: #eff2f5;
+  outline-width: 0;
+  width: inherit;
+}
+
+.post__update__button + aside.emoji-picker-react {
+  position: absolute;
+  z-index: 100;
+  left: 48rem
+}
+
+.post__update__emojiToggler, .post__update__emojiTogglerCliked {
+  margin-left: 5px;
+  cursor: pointer;
+  position: absolute;
+  left: 718px;
+  top: 630px;
+}
+
+.post__update__emojiToggler {
+  color: gray
+}
+
+.post__update__emojiTogglerCliked {
+  color: #4178F2;
+}
+
+.post__update__emojiPicker {
+  position: absolute;
+  z-index: 100;
+  left: 464px;
+  top: 658px;
+}
+
+.post__update__button {
+  background-color: #4178F2;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  color: #eff2f5;
+  cursor: pointer;
+}
+
+.post__liked {
+  color: #4178F2
+}

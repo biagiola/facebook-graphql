@@ -1,0 +1,13 @@
+.app {
+    background-color: #f1f2f5;
+}
+
+/* erease black border after clicking tags on chrome */
+*:focus {
+  outline: 0;
+}
+
+.app__body {
+    display: flex;
+}
+

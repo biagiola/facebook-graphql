@@ -1,0 +1,156 @@
+.chat__divader {
+  height: 1px;
+  border-bottom: 1px solid rgb(199, 199, 199);
+  margin-top: 25px;
+  margin-bottom: 10px
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chat__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.chat__header__left {
+  margin-top: 12px;
+  margin-left: 10px;
+  cursor: default;
+}
+
+.chat__header__right {
+  display: flex;
+  flex-direction: row;
+}
+
+.chat__header__right > svg, .chat__modal__header__left > svg {
+  color: 'rgb(185, 179, 169)';
+  cursor: pointer;
+}
+
+.chat__box {
+  height: 320px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  padding-top: 15px;
+  margin: 5px;
+}
+
+.chat__box__user {
+  display: flex;
+  flex-direction: row;
+  padding-top: 5px;
+  padding-bottom: 2px;
+  cursor: pointer
+}
+
+.chat__box__user:hover {
+  background-color: rgb(220, 220, 220);
+  border-radius: 3px;
+}
+
+.chat__box__avatar {
+  border-radius: 10px;
+  padding: 2px;
+  padding-top: 3px;
+  padding-left: 10px;
+  margin-right: 8px;
+}
+
+.user__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 15px;
+}
+
+.user__status {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: green;
+  position: relative;
+  left: 20px;
+  bottom: 8px;
+}
+
+.chat__box__name {
+  padding-top: 10px;
+  color: rgb(82 82 82);
+  font-size: 14px;
+}
+
+.chat__disconnected {
+  display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background-color: #dad9d9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.chat__dialog {
+  display: flex;
+  z-index: 100;
+  position: fixed;
+  top: 435px;
+  right: 350px;
+  background-color: #ffffff;
+  box-shadow: -5px -18px 69px -37px rgba(0,0,0,0.7);
+  padding: 15px;
+}
+
+.chat__dialog {
+  display: flex;
+  flex-direction: column;
+  width: 205px;
+  height: 200px;
+  padding-left: 8px;
+  padding-right: 4px;
+}
+
+.chat__dialog__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.chat__dialog__header > div > img {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+}
+
+.chat__dialog__name {
+  font-size: 15px;
+  color: rgb(79 79 78);
+  margin-top: 5px;
+  margin-left: 10px;
+}
+
+.chat__dialog__messages {
+  height: 500px;
+}
+
+.chat__dialog__sender {
+  display: flex;  
+  flex-direction: row;
+  padding-right: 2px;
+}
+
+.chat__dialog__sender > input {
+  border: 1px solid #eff2f5;
+  border-radius: 15px;
+  background-color: #eff2f5;
+  padding-left: 5px;
+  margin-left: 0px;
+  color: rgb(82 82 82);
+  width: 85%;
+}

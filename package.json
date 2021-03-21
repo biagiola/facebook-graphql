@@ -1,0 +1,29 @@
+{
+  "name": "facebook-clone-backend",
+  "version": "1.0.0",
+  "description": "server side",
+  "main": "server.js",
+  "author": "David Biagiola",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.5.0",
+    "gridfs-stream": "^1.1.1",
+    "mongoose": "^5.10.9",
+    "multer": "^1.4.2",
+    "multer-gridfs-storage": "^4.2.0",
+    "path": "^0.12.7",
+    "socket.io": "2.2.0"
+  },
+  "scripts": {
+    "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
+    "start": "node server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

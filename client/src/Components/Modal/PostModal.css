@@ -1,0 +1,45 @@
+.messageSender__input {
+  outline-width: 0;
+  border: none;
+  padding: 5px 20px;
+  margin: 0 10px;
+  border-radius: 999px;
+  background-color: #eff2f5;
+}
+
+.postModal__button__bgcolor {
+  
+  cursor: pointer;
+  background-color: #4178F2;
+  border-radius: 5px;
+}
+
+.MuiButton-label {
+  color: #eff2f5;
+}
+
+.postModal__button {
+  width: 100%;
+  
+  border: none;
+  text-align: center;
+}
+
+.postModal__filehandler {
+  width: 20%;
+}
+
+.postModal__filebutton {
+  height: 0;
+  width: 0;
+  background-color: transparent;
+  color: transparent;
+  border: none;
+}
+
+/* put the emoji picker in front of */
+.postModal__emoji > aside {
+  position: absolute;
+  z-index: 100;
+  background-color: #eff2f5;
+}

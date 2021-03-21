@@ -1,0 +1,29 @@
+{
+  "files": {
+    "main.css": "/static/css/main.f4b0a7e5.chunk.css",
+    "main.js": "/static/js/main.db0f4dd3.chunk.js",
+    "main.js.map": "/static/js/main.db0f4dd3.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.54173ab5.js",
+    "runtime-main.js.map": "/static/js/runtime-main.54173ab5.js.map",
+    "static/js/2.fd2fd511.chunk.js": "/static/js/2.fd2fd511.chunk.js",
+    "static/js/2.fd2fd511.chunk.js.map": "/static/js/2.fd2fd511.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.9659a90c1f9a8594ff2e743ab5b5fb5c.js": "/precache-manifest.9659a90c1f9a8594ff2e743ab5b5fb5c.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/main.f4b0a7e5.chunk.css.map": "/static/css/main.f4b0a7e5.chunk.css.map",
+    "static/js/2.fd2fd511.chunk.js.LICENSE.txt": "/static/js/2.fd2fd511.chunk.js.LICENSE.txt",
+    "static/media/1280px-Facebook_Logo_(2019).svg2.png": "/static/media/1280px-Facebook_Logo_(2019).svg2.80bd1a1f.png",
+    "static/media/avatar1.1.webp": "/static/media/avatar1.1.6eb8b092.webp",
+    "static/media/avatar2.1.webp": "/static/media/avatar2.1.f82eac39.webp",
+    "static/media/avatar3.1.webp": "/static/media/avatar3.1.6940785e.webp",
+    "static/media/story1.3.webp": "/static/media/story1.3.dbead32e.webp",
+    "static/media/story2.3.webp": "/static/media/story2.3.e7f70c50.webp",
+    "static/media/story3.3.webp": "/static/media/story3.3.eceebe3e.webp"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.54173ab5.js",
+    "static/js/2.fd2fd511.chunk.js",
+    "static/css/main.f4b0a7e5.chunk.css",
+    "static/js/main.db0f4dd3.chunk.js"
+  ]
+}
