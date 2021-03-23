@@ -110,7 +110,7 @@
 .chat__dialog {
   display: flex;
   flex-direction: column;
-  width: 205px;
+  width: 215px;
   height: 200px;
   padding-left: 8px;
   padding-right: 4px;
@@ -120,6 +120,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  cursor: default
 }
 
 .chat__dialog__header > div > img {
@@ -135,8 +136,16 @@
   margin-left: 10px;
 }
 
+button {
+  cursor: pointer;
+  border: none
+}
+
 .chat__dialog__messages {
   height: 500px;
+  overflow-wrap: break-word;
+  padding: 5px;
+  font-size: 13px;
 }
 
 .chat__dialog__sender {
@@ -153,4 +162,29 @@
   margin-left: 0px;
   color: rgb(82 82 82);
   width: 85%;
+  cursor: text;
+}
+
+.chat__dialog__messages {
+  width: inherit;
+  text-overflow: inherit;
+  overflow-y: auto;
+  cursor: default;
+}
+
+.chat__sent {
+  padding: 5px;
+  background-color: rgb(47, 73, 220);
+  color: white;
+  border-radius: 11px;
+  margin: 2px;
+  width: fit-content;
+  cursor: default;
+  transition: all;
+  transition-duration: 0.7s;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 2px;
 }

@@ -5,6 +5,8 @@ const Grid = require('gridfs-stream')
 const mongoose = require('mongoose') 
 const express = require('express') 
 
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./users');
+
 const app = express();
 app.use(cors())
 const server = http.createServer(app);
@@ -14,12 +16,24 @@ const PORT = process.env.PORT || 9000
 
 // socket io
 io.on('connection', (socket) => {
-  socket.on('join', ({name, room}, callback) => {
-    console.log('You are in join socket', name, room)
+  socket.on('join', ({name, email, room}, callback) => {
+    //console.log('You are in join socket', name, room, email)
+    // add a new user
+    const { error, user } = addUser({ id: socket.id, name: email, room })
+    if(error) return callback(error);
 
+    console.log(user)
+
+    // add that user to the room
     socket.join(room);
   
-    socket.emit('message', {user: 'admin', text: `${name}, wellcome to the room ${room}`})
+    // send a getback message to the frontend
+    socket.emit('message', {user: 'admin', text: `${name}, Wellcome to the room ${room}, your email es ${email}`})
+
+    // send all the users that are online
+
+    console.log('users in room(room)', getUsersInRoom(room))
+    io.to(room).emit('roomData', { users: getUsersInRoom(room) });
 
     callback()
   })

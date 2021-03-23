@@ -54,9 +54,9 @@ const Widgets = () => {
   const [openChat, setOpenChat] = useState(false)
   const [open, setOpen] = useState(false)
   const [userSelectedId, setUserSelectedId] = useState(null)
+  const [users, setUsers] = useState('')
   const [name, setName] = useState('David')
-  const [room, setRoom] = useState('House')
-  const [users, setUsers] = useState('');
+  const [room, setRoom] = useState('facebookapp')
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
 
@@ -85,14 +85,16 @@ const Widgets = () => {
   }, []) */
 
   const changeChatStatus = () => {
-    console.log('changeChatStatus')
     // close modal
     setAnchorEl(null) 
     setOpen(!open)
 
     socket = io(ENDPOINT)
 
-    socket.emit('join', { name, room }, (error) => {
+    console.log()
+
+    let email = user.email
+    socket.emit('join', { name, email, room }, (error) => {
       console.log('header socket join')
       if(error) {
         alert(error)
@@ -105,11 +107,35 @@ const Widgets = () => {
       console.log('response from the server', message)
       setMessages(messages => [ ...messages, message ])
     });
+
+    socket.on("roomData", ({ users }) => {
+      setUsers(users);
+    });
+
+    console.log('users in the room', users)
+    
   }
 
-  const handleChat = (userId) => {
-    setOpenChat(true)
-    setUserSelectedId(userId)
+  useEffect(() => {
+    socket = io(ENDPOINT)
+
+    
+  }, [open])
+
+  const handleChat = (userId, stage) => {
+    console.log(stage)
+    if (stage == 'open') {
+      setOpenChat(true)
+    } 
+    if (stage == 'close') {
+      setOpenChat(false)
+    }
+    
+    if (userSelectedId == null) {
+      setUserSelectedId(userId)
+    } else {
+      setUserSelectedId(null)
+    }
   }
 
   return (
@@ -162,29 +188,38 @@ const Widgets = () => {
           </Menu>
         </div>
 
-        {open ? <div className="chat__box">
-          { usersExamples.map( user => (
-            <div 
-              key={user.id}
-              className='chat__box__user' 
-              onClick={() => handleChat(user.id)}>
-              {/* Avatar */}
-              <div className='chat__box__avatar'>
-                <img src={user.avatar} className='user__avatar'/>
-                <div className="user__status"></div>
+        {open ? 
+          <div className='chat__box'>
+            {
+              users.length > 0 ? users.map( user => (
+                <div key={Math.random()}>{user.name}</div>
+              )) : ''
+            }
+            { usersExamples.map( user => (
+              <div key={user.id}>
+              <div 
+                //key={Math.random()}
+                className='chat__box__user' 
+                onClick={() => handleChat(user.id, 'open')}>
+                {/* Avatar */}
+                <div className='chat__box__avatar'>
+                  <img src={user.avatar} className='user__avatar'/>
+                  <div className="user__status"></div>
+                </div>
+                {/* Name */}
+                <div className='chat__box__name'>{user.username}</div>
               </div>
-              {/* Name */}
-              <div className='chat__box__name'>{user.username}</div>
-              {openChat && user.id == userSelectedId ? 
-          <ChatBox  
-            key={user.id} 
-            name={user.username}
-            avatar={user.avatar}
-          /> : 
-          <div></div>
-        }
-              
-            </div>
+                {/* Chat with */}
+                {openChat && user.id == userSelectedId ? 
+                  <ChatBox  
+                    key={user.id + 'chat'} 
+                    name={user.username}
+                    avatar={user.avatar}
+                    handleChat={handleChat}
+                  /> : 
+                  <div></div>
+                }
+              </div>
             ))}
           </div> : 
           <div className='chat__disconnected' onClick={changeChatStatus}>
@@ -192,9 +227,7 @@ const Widgets = () => {
             <WifiOff style={{ color: '#1e54bf', paddingLeft: '5px'}} />
           </div>
         }
-        
       </div>
-
     </div>
   )
 }
