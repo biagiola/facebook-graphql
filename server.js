@@ -16,10 +16,13 @@ const PORT = process.env.PORT || 9000
 
 // socket io
 io.on('connection', (socket) => {
-  socket.on('join', ({name, email, room}, callback) => {
-    //console.log('You are in join socket', name, room, email)
+  socket.on('join', ({name, email, avatar, room}, callback) => {
+    console.log('join')
+    
     // add a new user
-    const { error, user } = addUser({ id: socket.id, name: email, room })
+    const { error, user } = addUser({ id: socket.id, name, email, avatar, room })
+    
+    console.log('error', error)
     if(error) return callback(error);
 
     console.log(user)
@@ -37,6 +40,19 @@ io.on('connection', (socket) => {
 
     callback()
   })
+
+  socket.on('disconnect', () => {
+    console.log('cerrar')
+    const user = removeUser(socket.id)
+
+    if (user) {
+      io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) })
+    }
+  })
+
+  /* socket.on('perro', () => {
+    console.log('perro')
+  }) */
 })
 
 // cors settings

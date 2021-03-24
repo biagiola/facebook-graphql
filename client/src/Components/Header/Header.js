@@ -7,8 +7,12 @@ import { actionTypes } from '../../Store/reducers/Reducer'
 import fbCircle from '../../assets/240px-Facebook_Logo_circle(2019).png'
 import './Header.css'
 
+import io from "socket.io-client"
+const ENDPOINT = 'http://localhost:9000/'
+let socket
+
 const Header = () => {
-  const [{ user }, dispatch] = useStateValue()
+  const [{ user, socket }, dispatch] = useStateValue()
   const [anchorEl, setAnchorEl] = useState(null) 
 
   //console.log('header user', user)
@@ -24,18 +28,11 @@ const Header = () => {
 
   const signOut = () => {
     console.log('signOut')
-    auth.signOut()
-      .then(result => {
-        //console.log('user logout', result)
-
-        dispatch({
-          type: actionTypes.SET_USER,
-          user: null
-        })
-
-        localStorage.removeItem('user')
-
-      }).catch(error => alert(error.message))
+    
+    dispatch({
+      type: actionTypes.DISCONNECT_SOCKET,
+      socketStatus: true
+    })
   }
 
   return (

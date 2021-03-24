@@ -1,5 +1,5 @@
 import { Button } from '@material-ui/core'
-import React from 'react'
+import React, { useEffect } from 'react'
 import './Login.css'
 import { auth, provider } from '../../firebase'
 import { useStateValue } from '../../Store/StateProvider'
@@ -16,6 +16,7 @@ function Login() {
       .then(result => {
         console.log('result', result)
         
+        /* add user */
         dispatch({
           type: actionTypes.SET_USER,
           user: result.user
@@ -25,6 +26,14 @@ function Login() {
 
       }).catch(error => console.log(error.message))
   }
+
+  useEffect(() => {
+    /* turn socket on */
+    dispatch({
+      type: actionTypes.DISCONNECT_SOCKET,
+      scoketStatus: false
+    })
+  }, [])
 
   return (
     <div className='login' >

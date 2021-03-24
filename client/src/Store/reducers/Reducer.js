@@ -1,6 +1,7 @@
 export const initialState = {
   user: null,
   deletePostId: null,
+  socketStatus: false,
   handleLikePost: { id: null, show: false},
   openEditPostBox: { id: null, show: false, text: null }
 }
@@ -8,6 +9,7 @@ export const initialState = {
 export const actionTypes = {
   SET_USER: 'SET_USER',
   DELETE_POST: 'DELETE_POST',
+  DISCONNECT_SOCKET: 'DISCONNECT_SOCKET',
   OPEN_EDIT_POST_BOX: 'OPEN_EDIT_POST_BOX'
 }
 
@@ -38,6 +40,12 @@ const reducer = (state, action) => {
         ...state,
         deletePostId: action.deletePostId
       }
+
+    case actionTypes.DISCONNECT_SOCKET:
+    return {
+      ...state,
+      socketStatus: action.socketStatus
+    }
 
     case actionTypes.OPEN_EDIT_POST_BOX:
       return {
