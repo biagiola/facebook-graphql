@@ -50,9 +50,6 @@ io.on('connection', (socket) => {
     }
   })
 
-  /* socket.on('perro', () => {
-    console.log('perro')
-  }) */
 })
 
 // cors settings
@@ -77,19 +74,16 @@ const corsOptions = {
     }
   }
 }
-//app.use(cors(corsOptions))
-//app.use(cors())
+app.use(cors(corsOptions))
 
-const { graphqlHTTP } = require('express-graphql')
-const schema = require('./graphqlSchema/Schema')
-
+// images that are saved into db
 Grid.mongo = mongoose.mongo
 
-// middlewares
-//app.use(bodyParser.json())
-//app.use(express.static('client'))
 app.use(express.json()) // recieve json data from axios
 
+// Graph-QL
+const { graphqlHTTP } = require('express-graphql')
+const schema = require('./graphqlSchema/Schema')
 // graph ql middleware
 app.use(
   '/graphql',
@@ -99,7 +93,7 @@ app.use(
   })
 );
 
-// static files for react app
+// static files for react app 
 const path = require('path')
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
@@ -110,11 +104,11 @@ if (process.env.NODE_ENV === 'production') {
   }); */
 }
 
+// DB config
 mongoose.set('useFindAndModify', false)
 
-// db confi
-//const mongoURI = 'mongodb+srv://biagiola:holaquetal123@cluster0.7y2eu.mongodb.net/facebookclone?retryWrites=true&w=majority'
-const mongoURI = 'mongodb+srv://biagiolaNew:holaquetal123@cluster0.tscwa.mongodb.net/facebookclone?retryWrites=true&w=majority'
+//const mongoURI = 'mongodb+srv://biagiola:<password>@cluster0.7y2eu.mongodb.net/facebookclone?retryWrites=true&w=majority'
+const mongoURI = 'mongodb+srv://biagiolaNew:<password>@cluster0.tscwa.mongodb.net/facebookclone?retryWrites=true&w=majority'
 //const mongoURI = process.env.MONGODB_URL
 mongoose.connect(mongoURI, {
   useFindAndModify: false,
