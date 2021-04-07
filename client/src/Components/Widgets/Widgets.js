@@ -8,10 +8,8 @@ import { actionTypes } from '../../Store/reducers/Reducer'
 import './Chat.css'
 
 import io from "socket.io-client"
-
 const ENDPOINT = 'http://localhost:9000/'
 let socket
-socket = io(ENDPOINT)
 
 const Widgets = () => {
   const [{ user, socketStatus }, dispatch] = useStateValue()
@@ -20,10 +18,7 @@ const Widgets = () => {
   const [open, setOpen] = useState(false)
   const [userSelectedId, setUserSelectedId] = useState(null)
   const [users, setUsers] = useState('')
-  //const [name, setName] = useState('David')
   const [room, setRoom] = useState('facebookapp')
-  const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState([])
 
   // modal opens
   const handleClick = event => {
@@ -43,6 +38,8 @@ const Widgets = () => {
 
   useEffect(() => {
     console.log('open, user useEffect', open, user)
+    console.log('user.id', user.id)
+    // create the socket
     socket = io(ENDPOINT)
 
     let name = user.displayName
@@ -59,12 +56,20 @@ const Widgets = () => {
         console.log('it works')
       }
     })
-    
+  }, [ENDPOINT])
+
+  useEffect(() => {
     /* set a new room */
     socket.on("roomData", ({ users }) => {
       console.log('roomData, users', users)
       setUsers(users);
     });
+
+    // recieve that message
+    socket.on("probando", ( data ) => {
+      console.log('probando, message**', data)
+    })
+
   }, [])
 
   const handleChat = (userId, stage) => {
@@ -83,6 +88,7 @@ const Widgets = () => {
     }
   }
 
+  // logout
   useEffect(() => {
     console.log('socketStatus', socketStatus)
     if (socketStatus === true) {
@@ -98,17 +104,10 @@ const Widgets = () => {
           user: null
         })
 
-        socket.emit('disconnect')
-        /* socket.emit('perro') */
+        socket.emit('cerrar')
         socket.off()  
 
       }).catch(error => alert(error.message))
-    }
-
-    return() => {
-      // disconnect user from the chat
-      //console.log('disconnected was executed, widgets')
-      
     }
   }, [socketStatus])
 
@@ -162,29 +161,34 @@ const Widgets = () => {
           </Menu>
         </div>
 
-        {open ? 
+        {!open ? 
           <div className='chat__box'>
             {/* online users */}
-            {users.length > 0 ? users.map( user => (
-              <div key={user.id}>
+            {users.length > 0 ? users.map( onlineUser => (
+              <div key={onlineUser.id}>
                 <div 
                   className='chat__box__user' 
-                  onClick={() => handleChat(user.id, 'open')}>
+                  onClick={() => handleChat(onlineUser.id, 'open')}>
                   {/* Avatar */}
                   <div className='chat__box__avatar'>
-                    <img src={user.avatar} className='user__avatar'/>
+                    <img src={onlineUser.avatar} className='user__avatar'/>
                     <div className="user__status"></div>
                   </div>
                   {/* Name */}
-                  <div className='chat__box__name'>{user.name}</div>
+                  <div className='chat__box__name'>{onlineUser.name}</div>
                 </div>
                 {/* Chat with */}
-                {openChat && user.id == userSelectedId ? 
+                {  }
+                {openChat && onlineUser.id == userSelectedId ? 
                   <ChatBox  
-                    key={user.id + 'chat'} 
-                    name={user.username}
-                    avatar={user.avatar}
+                    key={onlineUser.id + 'chat'} 
+                    id={onlineUser.id}
+                    name={onlineUser.name}
+                    avatar={onlineUser.avatar}
+                    email={onlineUser.email}
                     handleChat={handleChat}
+                    socket={socket}
+                    socketStatus={socketStatus}
                   /> : 
                   <div></div>
                 }

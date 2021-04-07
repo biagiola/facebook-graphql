@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Send, Minimize, Close } from '@material-ui/icons';
 import './Chat.css'
 
-const ChatBox = ({ name, avatar, handleChat }) => {
+const ChatBox = ({ id, name, avatar, email, handleChat, socket, socketStatus }) => {
   const [recievedMessages, setRecievedMessages] = useState([])
   const [sentMessages, setSentMessages] = useState([])
   const [message, setMessage] = useState('')
@@ -10,10 +10,26 @@ const ChatBox = ({ name, avatar, handleChat }) => {
 
   const handleMessage = (e) => {
     e.preventDefault()
-    console.log(messages)
-    setMessages([...messages, message])
-    setMessage('')
+    
+    setMessages(messages => [ ...messages, message ])
+    //setMessage('')
   }
+
+  useEffect(() => {
+    console.log(id, name, email,)
+    let data = {
+      name, avatar, email, messages
+    }
+    console.log(data)
+    // send message to db
+    socket.emit('mensajito', data, (error) => {
+      if(error) {
+        alert(error)
+      } else {
+        setMessage('')
+      }
+    })
+  }, [messages, socketStatus])
 
   return (
     <div className='chat__dialog'>
@@ -37,11 +53,23 @@ const ChatBox = ({ name, avatar, handleChat }) => {
 
       {/* Messages */}
       <div className='chat__dialog__messages'>
-        {
-          messages.map( message => (
-            <p key={Math.random()} className='chat__sent'>{message}</p>
-          ))
-        }
+        {/* left */}
+        <div className="chat__dialog__left">
+          {
+            messages.map( message => (
+              <p key={Math.random()} className='chat__sent__left'>{message}</p>
+            ))
+          }
+        </div>
+
+        {/* right */}
+        <div className="chat__dialog__right">
+          {
+            messages.map( message => (
+              <p key={Math.random()} className='chat__sent__right'>{message}</p>
+            ))
+          }
+        </div>
       </div>
 
       {/* Sender */}

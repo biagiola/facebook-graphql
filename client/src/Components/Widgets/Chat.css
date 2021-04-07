@@ -172,7 +172,7 @@ button {
   cursor: default;
 }
 
-.chat__sent {
+.chat__sent__left, .chat__sent__right {
   padding: 5px;
   background-color: rgb(47, 73, 220);
   color: white;
@@ -182,6 +182,20 @@ button {
   cursor: default;
   transition: all;
   transition-duration: 0.7s;
+}
+
+.chat__sent__right {
+  background-color: #d4d4d4;
+  color: rgb(20 20 21);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 0.50rem;
+}
+
+.chat__dialog__right {
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* width */
