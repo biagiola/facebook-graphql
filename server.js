@@ -16,9 +16,9 @@ const PORT = process.env.PORT || 9000
 
 // socket io
 io.on('connection', (socket) => {
+  /* add an user */
   socket.on('join', ({name, email, avatar, room}, callback) => {
-    console.log('join')
-    
+    console.log('join', email, room)
     // add a new user
     const { error, user } = addUser({ id: socket.id, name, email, avatar, room })
     
@@ -41,7 +41,18 @@ io.on('connection', (socket) => {
     callback()
   })
 
-  socket.on('disconnect', () => {
+  /* add new message */
+  socket.on('mensajito', (data, callback) => {
+    console.log('message are ', data)
+    //socket.broadcast.to('facebookapp').emit('recievedMessage', {message});
+    //socket.broadcast.emit('recievedMessageNew', message);
+    io.to('facebookapp').emit('probando', data);
+    //socket.broadcast.to('facebookapp').emit('probando', {message});
+    callback()
+  })
+  
+  /* disconnect the socket */
+  socket.on('cerrar', () => {
     console.log('cerrar')
     const user = removeUser(socket.id)
 
@@ -49,7 +60,7 @@ io.on('connection', (socket) => {
       io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) })
     }
   })
-
+  
 })
 
 // cors settings
@@ -74,16 +85,19 @@ const corsOptions = {
     }
   }
 }
-app.use(cors(corsOptions))
+//app.use(cors(corsOptions))
+//app.use(cors())
 
-// images that are saved into db
-Grid.mongo = mongoose.mongo
-
-app.use(express.json()) // recieve json data from axios
-
-// Graph-QL
 const { graphqlHTTP } = require('express-graphql')
 const schema = require('./graphqlSchema/Schema')
+
+Grid.mongo = mongoose.mongo
+
+// middlewares
+//app.use(bodyParser.json())
+//app.use(express.static('client'))
+app.use(express.json()) // recieve json data from axios
+
 // graph ql middleware
 app.use(
   '/graphql',
@@ -93,7 +107,7 @@ app.use(
   })
 );
 
-// static files for react app 
+// static files for react app
 const path = require('path')
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
@@ -104,11 +118,11 @@ if (process.env.NODE_ENV === 'production') {
   }); */
 }
 
-// DB config
 mongoose.set('useFindAndModify', false)
 
-//const mongoURI = 'mongodb+srv://biagiola:<password>@cluster0.7y2eu.mongodb.net/facebookclone?retryWrites=true&w=majority'
-const mongoURI = 'mongodb+srv://biagiolaNew:<password>@cluster0.tscwa.mongodb.net/facebookclone?retryWrites=true&w=majority'
+// db confi
+//const mongoURI = 'mongodb+srv://biagiola:holaquetal123@cluster0.7y2eu.mongodb.net/facebookclone?retryWrites=true&w=majority'
+const mongoURI = 'mongodb+srv://biagiolaNew:holaquetal123@cluster0.tscwa.mongodb.net/facebookclone?retryWrites=true&w=majority'
 //const mongoURI = process.env.MONGODB_URL
 mongoose.connect(mongoURI, {
   useFindAndModify: false,
