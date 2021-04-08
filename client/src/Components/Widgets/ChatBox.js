@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { Send, Minimize, Close } from '@material-ui/icons';
+import { Send, Minimize, Close } from '@material-ui/icons'
+import { useStateValue } from '../../Store/StateProvider'
 import './Chat.css'
 
-const ChatBox = ({ id, name, avatar, email, handleChat, socket, socketStatus }) => {
-  const [recievedMessages, setRecievedMessages] = useState([])
-  const [sentMessages, setSentMessages] = useState([])
+const ChatBox = (
+  { user0, user1, handleChat, socket, messagesRecieve, isReciever }) => {
+  const [{ user }] = useStateValue()
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
+
+  console.log('isReciever', isReciever)
 
   const handleMessage = (e) => {
     e.preventDefault()
@@ -15,21 +18,25 @@ const ChatBox = ({ id, name, avatar, email, handleChat, socket, socketStatus }) 
     //setMessage('')
   }
 
+  // send message to db
   useEffect(() => {
-    console.log(id, name, email,)
+    //console.log('socketUserLogged', socketUserLogged)
+
     let data = {
-      name, avatar, email, messages
+      user0, 
+      user1,
+      messages
     }
     console.log(data)
-    // send message to db
-    socket.emit('mensajito', data, (error) => {
+
+    socket.emit('mensajito', (data), (error) => {
       if(error) {
         alert(error)
       } else {
         setMessage('')
       }
     })
-  }, [messages, socketStatus])
+  }, [messages])
 
   return (
     <div className='chat__dialog'>
@@ -37,8 +44,14 @@ const ChatBox = ({ id, name, avatar, email, handleChat, socket, socketStatus }) 
       <div className='chat__dialog__header'>
         {/* left */}
         <div style={{display: 'flex'}}>
-          <img src={avatar}/>
-          <div className='chat__dialog__name'>{name}</div>
+          <img src={isReciever ? user0.avatar : user1.avatar}/>
+          <div>
+            <div className='chat__dialog__name'>{isReciever ? user0.email : user1.email}</div>
+            <div className='chat__dialog__active'>
+              <div className='active__now__green'></div>
+              <div className='active__now'>Active now</div>
+            </div>
+          </div>
         </div>
         {/* right */}
         <div style={{ display: 'flex', flexDirection: 'row'}}>
@@ -65,10 +78,10 @@ const ChatBox = ({ id, name, avatar, email, handleChat, socket, socketStatus }) 
         {/* right */}
         <div className="chat__dialog__right">
           {
-            messages.map( message => (
+            messagesRecieve ? messagesRecieve.map( message => (
               <p key={Math.random()} className='chat__sent__right'>{message}</p>
-            ))
-          }
+            )) : ''
+          } 
         </div>
       </div>
 

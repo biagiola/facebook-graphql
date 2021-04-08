@@ -7,18 +7,25 @@ import { auth } from '../../firebase'
 import { actionTypes } from '../../Store/reducers/Reducer'
 import './Chat.css'
 
-import io from "socket.io-client"
+// socket client config
+import io from 'socket.io-client'
 const ENDPOINT = 'http://localhost:9000/'
 let socket
 
 const Widgets = () => {
   const [{ user, socketStatus }, dispatch] = useStateValue()
-  const [anchorEl, setAnchorEl] = useState(null) 
-  const [openChat, setOpenChat] = useState(false)
-  const [open, setOpen] = useState(false)
-  const [userSelectedId, setUserSelectedId] = useState(null)
-  const [users, setUsers] = useState('')
-  const [room, setRoom] = useState('facebookapp')
+  const [anchorEl, setAnchorEl] = useState(null)      // modal
+  const [open, setOpen] = useState(false)             // open/close chat list
+  const [openChat, setOpenChat] = useState(false)     // chat box
+  
+  const [userSelectedId, setUserSelectedId] = useState(null)      // user clicked from the chat list
+  const [onlineUsers, setOnlineUsers] = useState('')              // users in the chat (comming from the socket backend)
+  
+  const [socketUserLogged, setSocketUserLogged] = useState(null)  // all the socket data from the user logged
+  const [chatMessages, setChatMessages] = useState([])            // list of messages
+
+  const [newMessage, setNewMessage] = useState(false)
+  const [messagesRecieve, setMessagesRecieve] = useState(null)
 
   // modal opens
   const handleClick = event => {
@@ -36,40 +43,54 @@ const Widgets = () => {
     setOpen(!open)
   }
 
+  // add users to socket
   useEffect(() => {
-    console.log('open, user useEffect', open, user)
-    console.log('user.id', user.id)
     // create the socket
     socket = io(ENDPOINT)
 
-    let name = user.displayName
+    let name = user.displayName 
     let email = user.email
     let avatar = user.photoURL
-    console.log('user changeChatStatus', user)
-
-    /* add new user */
+    let room = 'facebookapp'
+    // add new user - sender 
     socket.emit('join', { name, email, avatar, room }, (error) => {
-      console.log('header socket join')
       if(error) {
         alert(error)
-      } else {
-        console.log('it works')
-      }
+      } 
     })
   }, [ENDPOINT])
 
+  // online users and messages from chat
   useEffect(() => {
-    /* set a new room */
-    socket.on("roomData", ({ users }) => {
-      console.log('roomData, users', users)
-      setUsers(users);
-    });
+    // see all the users in the socket
+    socket.on('roomData', ({ usersCommingFromSocket }) => {
+      setOnlineUsers(usersCommingFromSocket)
 
-    // recieve that message
-    socket.on("probando", ( data ) => {
-      console.log('probando, message**', data)
+      // get socket data of the the logged user
+      for(let i=0; i<usersCommingFromSocket.length; i++) {
+        if (user.email == usersCommingFromSocket[i].email) {
+          setSocketUserLogged(usersCommingFromSocket[i])
+        }
+      }
     })
 
+    // recieve messages from the chat
+    socket.on('probando', ( data ) => {
+      console.log('probando, message**', data)
+      setChatMessages(data)
+
+      // check is there is a new message
+      if(data.user1.email == user.email && data.messages.length > 0) {
+        console.log('tenes un nuevo mensaje', )
+        setNewMessage(true)
+
+        setOpenChat(true)
+
+        setMessagesRecieve(data.messages)
+        //handleChat(data.user1.id, 'open')
+      }
+      
+    })
   }, [])
 
   const handleChat = (userId, stage) => {
@@ -90,7 +111,6 @@ const Widgets = () => {
 
   // logout
   useEffect(() => {
-    console.log('socketStatus', socketStatus)
     if (socketStatus === true) {
       auth.signOut()
       .then(result => {
@@ -113,20 +133,7 @@ const Widgets = () => {
 
   return (
     <div style={{ backgroundColor: '#F0F2F5', marginTop: '10px', display: 'flex', flexDirection: 'column' }}>
-      {/* <div>
-        <iframe 
-          title='oktanaPage'
-          src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fdiscord&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=false&hide_cover=false&show_facepile=true&appId" 
-          width="340" 
-          height="400" 
-          style={{border:"none", overflow:"hidden"}} 
-          scrolling="no" 
-          frameBorder="0" 
-          allowtransparency="true" 
-          allow="encrypted-media">
-        </iframe>
-      </div> */}
-      
+
       <div className='chat__divader'></div>
 
       {/* chat */}
@@ -163,37 +170,63 @@ const Widgets = () => {
 
         {!open ? 
           <div className='chat__box'>
-            {/* online users */}
-            {users.length > 0 ? users.map( onlineUser => (
-              <div key={onlineUser.id}>
-                <div 
-                  className='chat__box__user' 
-                  onClick={() => handleChat(onlineUser.id, 'open')}>
-                  {/* Avatar */}
-                  <div className='chat__box__avatar'>
-                    <img src={onlineUser.avatar} className='user__avatar'/>
-                    <div className="user__status"></div>
+            {/* online users - select a user to chat */}
+            {onlineUsers.length > 0 ? onlineUsers.map( onlineUser => (
+              // show all users except the current logged
+              ( onlineUser.email != user.email ?
+                <div key={onlineUser.id}>
+                  
+                  <div 
+                    className='chat__box__user' 
+                    onClick={() => handleChat(onlineUser.id, 'open')}>
+                    
+                    {/* Avatar */}
+                    <div className='chat__box__avatar'>
+                      <img src={onlineUser.avatar} className='user__avatar'/>
+                      <div className="user__status"></div>
+                    </div>
+                    
+                    {/* Name */}
+                    <div className='chat__box__name'>{onlineUser.name}</div>
                   </div>
-                  {/* Name */}
-                  <div className='chat__box__name'>{onlineUser.name}</div>
+
+                  {/* open to chat with */}                
+                  {(openChat && onlineUser.id == userSelectedId) ? 
+                    <ChatBox  
+                      key={onlineUser.id + 'chat'} 
+                      user0={socketUserLogged}
+                      user1={onlineUser}
+                      //user0={chatMessages.user1}
+                      //user1={chatMessages.user2}
+                      handleChat={handleChat}
+                      socket={socket}
+                      messagesRecieve={messagesRecieve}
+                      isReciever={false}
+                    /> : <div></div>
+                  }
                 </div>
-                {/* Chat with */}
-                {  }
-                {openChat && onlineUser.id == userSelectedId ? 
-                  <ChatBox  
-                    key={onlineUser.id + 'chat'} 
-                    id={onlineUser.id}
-                    name={onlineUser.name}
-                    avatar={onlineUser.avatar}
-                    email={onlineUser.email}
-                    handleChat={handleChat}
-                    socket={socket}
-                    socketStatus={socketStatus}
-                  /> : 
-                  <div></div>
-                }
-              </div>
+                : ''
+              )
             )) : ''} 
+
+            {/* open if there is a new message */}
+            {newMessage && openChat ? onlineUsers.map( onlineUser => (
+                (onlineUser.email == chatMessages.user1.email) 
+                  ? <div key={chatMessages.user1.id + 'true'}>
+                      <ChatBox  
+                        key={onlineUser.id + 'newMessage'} 
+                        //user0={socketUserLogged}
+                        user1={onlineUser}
+                        user0={chatMessages.user0}
+                        //user1={chatMessages.user2}
+                        handleChat={handleChat}
+                        socket={socket}
+                        messagesRecieve={messagesRecieve}
+                        isReciever={true}
+                      />
+                    </div> 
+                  : ''
+            )) : ''}
           </div> 
           : 
           <div className='chat__disconnected' onClick={changeChatStatus}>
@@ -207,3 +240,16 @@ const Widgets = () => {
 }
 
 export default Widgets
+{/* <div>
+        <iframe 
+          title='oktanaPage'
+          src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fdiscord&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=false&hide_cover=false&show_facepile=true&appId" 
+          width="340" 
+          height="400" 
+          style={{border:"none", overflow:"hidden"}} 
+          scrolling="no" 
+          frameBorder="0" 
+          allowtransparency="true" 
+          allow="encrypted-media">
+        </iframe>
+      </div> */}
