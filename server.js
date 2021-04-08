@@ -30,13 +30,10 @@ io.on('connection', (socket) => {
     // add that user to the room
     socket.join(room);
   
-    // send a getback message to the frontend
-    socket.emit('message', {user: 'admin', text: `${name}, Wellcome to the room ${room}, your email es ${email}`})
-
-    // send all the users that are online
-
+    // users online
     console.log('users in room(room)', getUsersInRoom(room))
-    io.to(room).emit('roomData', { users: getUsersInRoom(room) });
+    io.to(room).emit('roomData', { usersCommingFromSocket: getUsersInRoom(room) });
+    io.to(room).emit('onlineUserId', socket.id);
 
     callback()
   })
@@ -44,10 +41,7 @@ io.on('connection', (socket) => {
   /* add new message */
   socket.on('mensajito', (data, callback) => {
     console.log('message are ', data)
-    //socket.broadcast.to('facebookapp').emit('recievedMessage', {message});
-    //socket.broadcast.emit('recievedMessageNew', message);
     io.to('facebookapp').emit('probando', data);
-    //socket.broadcast.to('facebookapp').emit('probando', {message});
     callback()
   })
   
