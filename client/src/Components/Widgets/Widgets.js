@@ -17,15 +17,18 @@ const Widgets = () => {
   const [anchorEl, setAnchorEl] = useState(null)      // modal
   const [open, setOpen] = useState(false)             // open/close chat list
   const [openChat, setOpenChat] = useState(false)     // chat box
+
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState([])
   
-  const [userSelectedId, setUserSelectedId] = useState(null)      // user clicked from the chat list
   const [onlineUsers, setOnlineUsers] = useState('')              // users in the chat (comming from the socket backend)
+  const [userSelectedId, setUserSelectedId] = useState(null)      // user clicked from the chat list
   
   const [socketUserLogged, setSocketUserLogged] = useState(null)  // all the socket data from the user logged
   const [chatMessages, setChatMessages] = useState([])            // list of messages
 
   const [newMessage, setNewMessage] = useState(false)
-  const [messagesRecieve, setMessagesRecieve] = useState(null)
+  
 
   // modal opens
   const handleClick = event => {
@@ -48,6 +51,8 @@ const Widgets = () => {
     // create the socket
     socket = io(ENDPOINT)
 
+    console.log(user);
+
     let name = user.displayName 
     let email = user.email
     let avatar = user.photoURL
@@ -63,35 +68,37 @@ const Widgets = () => {
   // online users and messages from chat
   useEffect(() => {
     // see all the users in the socket
-    socket.on('roomData', ({ usersCommingFromSocket }) => {
-      setOnlineUsers(usersCommingFromSocket)
-
-      // get socket data of the the logged user
-      for(let i=0; i<usersCommingFromSocket.length; i++) {
-        if (user.email == usersCommingFromSocket[i].email) {
-          setSocketUserLogged(usersCommingFromSocket[i])
-        }
-      }
+    socket.on('roomData', ({ usersAvaible }) => {
+      setOnlineUsers(usersAvaible)
     })
 
-    // recieve messages from the chat
-    socket.on('probando', ( data ) => {
-      console.log('probando, message**', data)
-      setChatMessages(data)
+    // recieve messages and user data from the chat
+    socket.on('dataFromSocket', (message) => {
+      console.log('dataFromSocket **', message)
+      setChatMessages(message)
+
+      setMessages(messages => [ ...messages, message ])
 
       // check is there is a new message
-      if(data.user1.email == user.email && data.messages.length > 0) {
+      if(message.destinyEmail == user.email && message.text.length > 0) {
         console.log('tenes un nuevo mensaje', )
         setNewMessage(true)
-
         setOpenChat(true)
 
-        setMessagesRecieve(data.messages)
         //handleChat(data.user1.id, 'open')
       }
       
     })
   }, [])
+  
+  /* mensajito */
+  const sendMessage = (e, destinyEmail) => {
+    e.preventDefault()
+    
+    if(message) {
+      socket.emit('sendMessage', {message, destinyEmail}, () => setMessage(''));
+    }
+  }
 
   const handleChat = (userId, stage) => {
     console.log(stage)
@@ -194,14 +201,13 @@ const Widgets = () => {
                   {(openChat && onlineUser.id == userSelectedId) ? 
                     <ChatBox  
                       key={onlineUser.id + 'chat'} 
-                      user0={socketUserLogged}
-                      user1={onlineUser}
-                      //user0={chatMessages.user1}
-                      //user1={chatMessages.user2}
-                      handleChat={handleChat}
-                      socket={socket}
-                      messagesRecieve={messagesRecieve}
-                      isReciever={false}
+                      messages={messages}
+                      message={message}
+                      currentEmail={user.email}
+                      destinyEmail={onlineUser.email}
+                      setMessage={setMessage}
+                      sendMessage={sendMessage}
+                      typeChat={'clickedChat'}
                     /> : <div></div>
                   }
                 </div>
@@ -211,18 +217,17 @@ const Widgets = () => {
 
             {/* open if there is a new message */}
             {newMessage && openChat ? onlineUsers.map( onlineUser => (
-                (onlineUser.email == chatMessages.user1.email) 
-                  ? <div key={chatMessages.user1.id + 'true'}>
+                (onlineUser.email == chatMessages.destinyEmail) 
+                  ? <div key={chatMessages.user.id + 'true'}>
                       <ChatBox  
                         key={onlineUser.id + 'newMessage'} 
-                        //user0={socketUserLogged}
-                        user1={onlineUser}
-                        user0={chatMessages.user0}
-                        //user1={chatMessages.user2}
-                        handleChat={handleChat}
-                        socket={socket}
-                        messagesRecieve={messagesRecieve}
-                        isReciever={true}
+                        messages={messages}
+                        message={message}
+                        currentEmail={user.email}
+                        destinyEmail={chatMessages.destinyEmail}
+                        setMessage={setMessage}
+                        sendMessage={sendMessage}
+                        typeChat={'commingChat'}
                       />
                     </div> 
                   : ''
@@ -240,16 +245,31 @@ const Widgets = () => {
 }
 
 export default Widgets
-{/* <div>
-        <iframe 
-          title='oktanaPage'
-          src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fdiscord&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=false&hide_cover=false&show_facepile=true&appId" 
-          width="340" 
-          height="400" 
-          style={{border:"none", overflow:"hidden"}} 
-          scrolling="no" 
-          frameBorder="0" 
-          allowtransparency="true" 
-          allow="encrypted-media">
-        </iframe>
-      </div> */}
+{/*
+  <div>
+    <iframe 
+      title='oktanaPage'
+      src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fdiscord&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=false&hide_cover=false&show_facepile=true&appId" 
+      width="340" 
+      height="400" 
+      style={{border:"none", overflow:"hidden"}} 
+      scrolling="no" 
+      frameBorder="0" 
+      allowtransparency="true" 
+      allow="encrypted-media">
+    </iframe>
+  </div> 
+
+  // send message to db
+  useEffect(() => {
+    //console.log('socketUserLogged', socketUserLogged)
+    socket.emit('mensajito', (), (error) => {
+      if(error) {
+        alert(error)
+      } else {
+        setMessage('')
+      }
+    })
+  }, [messages])
+
+*/}
