@@ -32,16 +32,18 @@ io.on('connection', (socket) => {
   
     // users online
     console.log('users in room(room)', getUsersInRoom(room))
-    io.to(room).emit('roomData', { usersCommingFromSocket: getUsersInRoom(room) });
-    io.to(room).emit('onlineUserId', socket.id);
-
+    io.to(room).emit('roomData', { usersAvaible: getUsersInRoom(room) });
+    
     callback()
   })
 
   /* add new message */
-  socket.on('mensajito', (data, callback) => {
-    console.log('message are ', data)
-    io.to('facebookapp').emit('probando', data);
+  socket.on('sendMessage', ({message, destinyEmail}, callback) => {
+    console.log('message, destinyEmail ', message, destinyEmail)
+    
+    const user = getUser(socket.id);
+    
+    io.to('facebookapp').emit('dataFromSocket', { user: user, text: message, destinyEmail });
     callback()
   })
   
